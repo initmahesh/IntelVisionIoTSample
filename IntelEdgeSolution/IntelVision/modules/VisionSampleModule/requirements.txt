@@ -1,0 +1,7 @@
+azure-iothub-device-client~=1.4.3
+setuptools 
+numpy 
+networkx 
+onnx 
+opencv-python 
+pillow
