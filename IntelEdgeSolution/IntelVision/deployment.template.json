@@ -13,7 +13,7 @@
               "registryName": {
                 "username": "$CONTAINER_REGISTRY_USERNAME_docker",
                 "password": "$CONTAINER_REGISTRY_PASSWORD_docker",
-                "address": "mycapreg.azurecr.io"
+                "address": "$CONTAINER_REGISTRY_ADDRESS_docker"
               }
             }
           }
