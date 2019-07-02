@@ -12,9 +12,17 @@ On Edge Device :
 
   On device
 
-  1. “sudo gedit ~/.profile” command to add “xhost +” command to “~/.profile” file, so now we don’t need to execute “xhost +” every time after restarting machine.This required to allow display to be used form docker .
+  1. “sudo gedit ~/.profile”  command to add “xhost +” command to “~/.profile” file, so now we don’t need to execute “xhost +” every time after restarting machine.This required to allow display to be used form docker .
 
-  2. Modify Connection string taken from iot Edge device as per instruction here https://docs.microsoft.com/en-us/azure/iot-edge/quickstart-linux
+  2. Modify Connection string taken from iot Edge device as per instruction here https://docs.microsoft.com/en-us/azure/iot-edge/quickstart-linux as this device already has iot edge and docker installed youjust modify a file with you connection STring 
+    To edit the config.yaml, run this command in a Terminal on the Ubuntu machine.
+      sudo nano /etc/iotedge/config.yaml
+    This is the content of the config.yaml, replace the the <ADD..> with the connection string.
+
+        provisioning:
+        source: "manual"
+        device_connection_string: "<ADD DEVICE CONNECTION STRING HERE>"
+    At this point, you have an IoT Edge device connected to the IoT Hub Service.
 
   3.Set Usb rules by runing batch file at location 
     /opt/intel/computer_vision_sdk/install_dependencies/install_NCS_udev_rules.sh
