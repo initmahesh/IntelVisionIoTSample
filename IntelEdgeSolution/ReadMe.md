@@ -3,6 +3,7 @@ On host
   please make sure you have VScode and can build and deploy python on Iot Edge devices as per instruction below
     https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-python-module
   Please change env file to your contianer registry credentials build and deploy ...
+  
   Update the .env file with the values for your container registry. Refer to Create a container registry for more detail about ACR  settings.
   
         REGISTRY_NAME=<YourAcrUri>
