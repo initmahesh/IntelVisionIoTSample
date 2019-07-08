@@ -27,11 +27,34 @@ On Edge Device :
     To edit the config.yaml, run this command in a Terminal on the Ubuntu machine.
       sudo nano /etc/iotedge/config.yaml
     This is the content of the config.yaml, replace the the <ADD..> with the connection string.
-
-        provisioning:
+    
+   Also change the hostname to "up2" as below 
+   
+    provisioning:
         source: "manual"
         device_connection_string: "<ADD DEVICE CONNECTION STRING HERE>"
-    At this point, you have an IoT Edge device connected to the IoT Hub Service.
+          At this point, you have an IoT Edge device connected to the IoT Hub Service.
+          
+    ..
+    ...
+    ..
+    
+    ###############################################################################
+    # Edge device hostname
+    ###############################################################################
+    #
+    # Configures the environment variable 'IOTEDGE_GATEWAYHOSTNAME' injected into
+    # modules. Regardless of case the hostname is specified below, a lower case
+    # value is used to configure the Edge Hub server hostname as well as the
+    # environment variable specified above.
+    #
+    # It is important to note that when connecting downstream devices to the
+    # Edge Hub that the lower case value of this hostname be used in the
+    # 'GatewayHostName' field of the device's connection string URI.
+    ###############################################################################
+
+    #hostname: "ivk-desktop"
+    hostname: "up2"
 
   3.Set Usb rules by runing batch file at location 
     /opt/intel/computer_vision_sdk/install_dependencies/install_NCS_udev_rules.sh
