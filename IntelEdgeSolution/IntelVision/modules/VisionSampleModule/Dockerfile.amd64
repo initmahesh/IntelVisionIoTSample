@@ -2,11 +2,16 @@ FROM ubuntu:16.04
 
 WORKDIR /app
 
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends libcurl4-openssl-dev python3-pip libboost-python1.58-dev libpython3-dev \
     python3.5  zip x11-apps lsb-core wget cpio sudo libpng-dev zlib1g-dev udev\
     libnuma1 ocl-icd-libopencl1 clinfo libboost-filesystem1.58.0 libboost-thread1.58.0 && \
     rm -rf /var/lib/apt/lists/*
+
+#From OpenVino git https://github.com/intel/Edge-Analytics-FaaS/blob/master/Azure-IoT-Edge/OnnxRuntime/UnifiedDocker/Dockerfile
+#Get the R5.0.1 openvino file from here https://software.intel.com/en-us/openvino-toolkit/choose-download/free-download-linux
+RUN wget https://resourcesincode.blob.core.windows.net/intelvision/l_openvino_toolkit_p_2018.5.455.tgz
 
 RUN pip3 install --upgrade pip setuptools 
 
@@ -16,9 +21,7 @@ RUN pip3 install -r requirements.txt
 
 ENV LD_LIBRARY_PATH=/usr/lib:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
 
-#From OpenVino git https://github.com/intel/Edge-Analytics-FaaS/blob/master/Azure-IoT-Edge/OnnxRuntime/UnifiedDocker/Dockerfile
-#Get the R5.0.1 openvino file from here https://software.intel.com/en-us/openvino-toolkit/choose-download/free-download-linux
-RUN wget https://resourcesincode.blob.core.windows.net/intelvision/l_openvino_toolkit_p_2018.5.455.tgz
+
 
 #COPY l_openvino_toolkit_p_2018.5.455.tgz ./
 
@@ -68,7 +71,7 @@ RUN rm -rf *.deb
 
 ARG DEVICE
 
-COPY /resources/. .
+
 RUN wget https://resourcesincode.blob.core.windows.net/intelvision/onnxruntime_openvino-0.4.0-cp35-cp35m-linux_x86_64.whl
 RUN wget https://resourcesincode.blob.core.windows.net/intelvision/Tiny_YoloV2_Cleanroom.onnx
 RUN pip3 install /app/*-linux_x86_64.whl && rm /app/*.whl
@@ -76,7 +79,8 @@ RUN pip3 install /app/*-linux_x86_64.whl && rm /app/*.whl
 # RUN useradd -ms /bin/bash moduleuser
 # USER moduleuser
 
-RUN chmod +x /app/start.sh
-ENTRYPOINT ["/app/start.sh"]
+#RUN chmod +x /app/start.sh
+#ENTRYPOINT ["/app/start.sh"]
+COPY /resources/. .
 
-#CMD "python3", "-u", "./cleanroom_cpu_demo.py" ]
+CMD [ "python3", "-u", "./main.py" ]
