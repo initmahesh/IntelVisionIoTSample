@@ -13,6 +13,7 @@ import numpy as np
 import onnxruntime as rt
 import cv2
 import json
+import datetime
 from PIL import Image,ImageDraw
 
 
@@ -41,8 +42,16 @@ def model_inferencing(hub_manager):
 
     #fourcc = cv2.VideoWriter_fourcc(*'XVID')
     #output_video = cv2.VideoWriter('cpu_output.avi',fourcc, float(17.0), (640,360))
-
     ret, frame = cap.read()
+    sentTime = datetime.datetime.now()
+    headCount = 0
+    bunnySuitCount = 0
+    glassesCount = 0
+    headCountAccuracy = []
+    bunnySuitCountAccuracy = []
+    glassesCountAccuracy = []
+
+
     i = 0
     while cap.isOpened():
         l_start = time.time()
@@ -120,8 +129,36 @@ def model_inferencing(hub_manager):
                             cv2.putText(frame,label[detectedClass],(int(x)+2,int(y)-3),cv2.FONT_HERSHEY_COMPLEX,0.4,(255,255,255),1)
                             existingLabels[label[detectedClass]].append((labelX,labelY))
                         print('{} detected in frame {}'.format(label[detectedClass],i))
-                        inference_result = {"label":label[detectedClass],"confidence":confidence*100}
-                        hub_manager.send_msg_to_cloud(json.dumps(inference_result))
+                        resultConficence = np.around(confidence*100, decimals = 4)
+                        print('Result Conficence: ' + str(resultConficence))
+                        if label[detectedClass] == "bunny suit":
+                            bunnySuitCount = bunnySuitCount + 1
+                            bunnySuitCountAccuracy.append(resultConficence)
+                        elif label[detectedClass] == "glasses":
+                            glassesCount = glassesCount + 1
+                            glassesCountAccuracy.append(resultConficence)
+                        elif label[detectedClass] == "head":
+                            headCount = headCount + 1
+                            headCountAccuracy.append(resultConficence)
+
+                        currentTime = datetime.datetime.now()
+                        print("total seconds since message: " + str((currentTime - sentTime).total_seconds()))
+                        if (currentTime - sentTime).total_seconds() > 5:
+                            inference_result = {"bunnySuitCount": bunnySuitCount,
+                             "bunnySuitCountAccuracy":(sum(glassesCountAccuracy) / len(glassesCountAccuracy)),
+                             "glassesCount": glassesCount,
+                             "glassesCountAccuracy":(sum(glassesCountAccuracy) / len(glassesCountAccuracy)),
+                             "headCount": headCount,
+                             "headCountAccuracy":(sum(headCountAccuracy) / len(headCountAccuracy))
+                             }
+                            hub_manager.send_msg_to_cloud(json.dumps(inference_result))
+                            headCount = 0
+                            bunnySuitCount = 0
+                            glassesCount = 0
+                            headCountAccuracy = []
+                            bunnySuitCountAccuracy = []
+                            glassesCountAccuracy = []
+                            sentTime = datetime.datetime.now()
 
         #output_video.write(frame)
         cv2.putText(frame,'VPU',(10,20),cv2.FONT_HERSHEY_COMPLEX,0.5,(255,255,255),1)
@@ -216,6 +253,7 @@ class HubManager(object):
             print ("Exception in SendMsgToCloud")
             pass
 
+
 def main(protocol):
     try:
         print ( "\nPython %s\n" % sys.version )
@@ -225,10 +263,12 @@ def main(protocol):
 
         print ( "Starting the IoT Hub Python sample using protocol %s..." % hub_manager.client_protocol )
         model_inferencing(hub_manager)
-        #print ( "The sample is now waiting for messages and will indefinitely.  Press Ctrl-C to exit. ")
+        # print ( "The sample is now waiting for messages and will indefinitely.  Press Ctrl-C to exit. ")
 
-        #while True:
-            #time.sleep(1)
+        # while True:
+        #     time.sleep(1)
+        #     inference_result = {"label":"test","confidence":100}
+        #     hub_manager.send_msg_to_cloud(json.dumps(inference_result))
 
     except IoTHubError as iothub_error:
         print ( "Unexpected error %s from IoTHub" % iothub_error )

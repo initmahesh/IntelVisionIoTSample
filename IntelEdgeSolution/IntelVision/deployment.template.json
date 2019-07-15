@@ -11,9 +11,9 @@
             "loggingOptions": "",
             "registryCredentials": {
               "registryName": {
-                "username": "$CONTAINER_REGISTRY_USERNAME_docker",
-                "password": "$CONTAINER_REGISTRY_PASSWORD_docker",
-                "address": "$CONTAINER_REGISTRY_ADDRESS_docker"
+                "username": "$CONTAINER_REGISTRY_USERNAME",
+                "password": "$CONTAINER_REGISTRY_PASSWORD",
+                "address": "$CONTAINER_REGISTRY_ADDRESS"
               }
             }
           }
@@ -58,7 +58,7 @@
         },
         "modules": {
           "VisionSampleModule": {
-            "version": "1.0",
+            "version": "1.0002",
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
@@ -85,6 +85,21 @@
               
               }
             }
+          },
+          "CentralAgent": {
+            "version": "1.0001",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.CentralAgent}",
+              "createOptions": {}
+            },
+            "env": {
+              "EdgeConnectionString": {
+                "value": "HostName=iotc-5762c12e-3a40-48b2-8965-d55750749fb0.azure-devices.net;DeviceId=f5c7a434-64a8-4a37-a32e-2462f22bbc0f;SharedAccessKey=W6BTVqmuKJQ8l2LA0hD0L3O6mkVVdyOWvpdXQVACDB0="
+              }
+            }
           }
         }
       }
@@ -93,7 +108,8 @@
       "properties.desired": {
         "schemaVersion": "1.0",
         "routes": {
-          "VisionSampleModuleToIoTHub": "FROM /messages/modules/VisionSampleModule/outputs/* INTO $upstream"
+          "VisionSampleModuleToIoTHub": "FROM /messages/modules/VisionSampleModule/outputs/* INTO $upstream",
+          "VisionSampleModuleToCentralAgent": "FROM /messages/modules/VisionSampleModule/outputs/* INTO BrokeredEndpoint(\"/modules/CentralAgent/inputs/input\")"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
