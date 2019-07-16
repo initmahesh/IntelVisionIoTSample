@@ -17,39 +17,36 @@ import datetime
 from PIL import Image,ImageDraw
 
 
-def sigmoid(x, derivative=False):
-  return x*(1-x) if derivative else 1/(1+np.exp(-x))
 
-def softmax(x):
-  scoreMatExp = np.exp(np.asarray(x))
-  return scoreMatExp / scoreMatExp.sum(0)
 
 def model_inferencing(hub_manager):
-    
-    clut = [(0,0,0),(255,0,0),(255,0,255),(0,0,255),(0,200,0)]
-    label = ["unprotected","bunny suit","glasses","head","robot"]
 
-    sess = rt.InferenceSession("Tiny_YoloV2_Cleanroom.onnx")
+    sess_options = rt.SessionOptions()
+    sess_options.set_graph_optimization_level(2)
+    sess = rt.InferenceSession("detect-body.onnx", sess_options=sess_options)
     input_name = sess.get_inputs()[0].name
+    run_options = rt.RunOptions()
 
-    cap = cv2.VideoCapture('manufacture1.mp4')
-    #cap = cv2.VideoCapture(0)
+    # cap = cv2.VideoCapture('peopletest.mp4')
+    cap = cv2.VideoCapture(0)
     fps = cap.get(cv2.CAP_PROP_FPS)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    x_scale = float(width)/416.0
-    y_scale = float(height)/416.0
+    displayWidth = int(width)
+    displayHeight = int(height)
+    preProcessingWidth = int(displayWidth/8)
+    preProcessingHeight = int(displayHeight/8)
+    x_scale = float(displayWidth)/preProcessingWidth
+    y_scale = float(displayHeight)/preProcessingHeight
 
     #fourcc = cv2.VideoWriter_fourcc(*'XVID')
     #output_video = cv2.VideoWriter('cpu_output.avi',fourcc, float(17.0), (640,360))
     ret, frame = cap.read()
     sentTime = datetime.datetime.now()
-    headCount = 0
-    bunnySuitCount = 0
-    glassesCount = 0
-    headCountAccuracy = []
-    bunnySuitCountAccuracy = []
-    glassesCountAccuracy = []
+    PersonCount = 0
+    PersonCountAccuracy = []
+    FPS = []
+
 
 
     i = 0
@@ -61,109 +58,79 @@ def model_inferencing(hub_manager):
             print('no video RESETTING FRAMES TO 0 TO RUN IN LOOP')
             cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
             continue
-        initial_w = cap.get(3)
-        initial_h = cap.get(4)
-        
+
+        frame = cv2.resize(frame, (displayWidth, displayHeight))
         # preprocessing the input frame
-        in_frame = cv2.resize(frame, (416, 416))
-        X = np.asarray(in_frame)
-        X = X.astype(np.float32)
-        X = X.transpose(2,0,1)
-        X = X.reshape(1,3,416,416)
+        in_frame = cv2.resize(frame, (preProcessingWidth, preProcessingHeight))
+        X = np.array(in_frame, dtype=np.float64)[:, :, [2, 1, 0]]
         
         start = time.time()
-        out = sess.run(None, {input_name: X.astype(np.float32)})
+        pred = sess.run(None, {input_name: X.astype(np.float64)}, run_options=run_options)
         end = time.time()
         inference_time = end - start
         print("Inference time is ::{}".format(inference_time))
-        out = out[0][0]
+        print("device is: " + rt.get_device())
+        pred = pred[0]  # we always pass one image a time
 
-        numClasses = 5
-        anchors = [1.08, 1.19, 3.42, 4.41, 6.63, 11.38, 9.42, 5.11, 16.62, 10.52]
 
-        existingLabels = {l: [] for l in label}
+        existingLabels = []
 
-        for cy in range(0,13):
-            for cx in range(0,13):
-                for b in range(0,5):
-                    channel = b*(numClasses+5)
-                    tx = out[channel  ][cy][cx]
-                    ty = out[channel+1][cy][cx]
-                    tw = out[channel+2][cy][cx]
-                    th = out[channel+3][cy][cx]
-                    tc = out[channel+4][cy][cx]
+        for j in range(pred.shape[0]):
 
-                    x = (float(cx) + sigmoid(tx))*32
-                    y = (float(cy) + sigmoid(ty))*32
-
-                    w = np.exp(tw) * 32 * anchors[2*b  ]
-                    h = np.exp(th) * 32 * anchors[2*b+1] 
-
-                    confidence = sigmoid(tc)
-
-                    classes = np.zeros(numClasses)
-                    for c in range(0,numClasses):
-                        classes[c] = out[channel + 5 +c][cy][cx]
-                    classes = softmax(classes)
-                    detectedClass = classes.argmax()
+                confidence = pred[j, 4]
+                
+                if 0.40< confidence:
+                    color =(0, 255, 0)
+                    x = pred[j, 0]
+                    y = pred[j, 1]
+                    w = pred[j, 2] - x
+                    h = pred[j, 3] - y
+                    x *= x_scale
+                    y *= y_scale
+                    w *= x_scale
+                    h *= y_scale
+                    #cv2.rectangle(frame, (int(x),int(y)),(int(x+w),int(y+h)),color,1)
                     
-                    if 0.45< classes[detectedClass]*confidence:
-                        color =clut[detectedClass]
-                        x = (x - w/2)*x_scale
-                        y = (y - h/2)*y_scale
-                        w *= x_scale
-                        h *= y_scale
-                        #cv2.rectangle(frame, (int(x),int(y)),(int(x+w),int(y+h)),color,1)
+                    labelX = int((x+x+w)/2)
+                    labelY = int((y+y+h)/2)
+                    addLabel = True
+                    labThreshold = 40
+                    for point in existingLabels:
+                        if labelX < point[0] + labThreshold and labelX > point[0] - labThreshold and \
+                            labelY < point[1] + labThreshold and labelY > point[1] - labThreshold:
+                            addLabel = False
+                    if addLabel:
+                        cv2.rectangle(frame, (int(x),int(y)),(int(x+w),int(y+h)),color,2)
+                        cv2.rectangle(frame, (int(x),int(y-13)),(int(x)+9*len("Person"),int(y)),color,-1)
+                        cv2.putText(frame,"Person",(int(x)+2,int(y)-3),cv2.FONT_HERSHEY_COMPLEX,0.4,(255,255,255),1)
+                        existingLabels.append((labelX,labelY))
+
+                    print('{} detected in frame {}'.format("Person",i))
+                    resultConficence = np.around(confidence*100, decimals = 4)
+                    print('Result Conficence: ' + str(resultConficence))
+                    PersonCount = PersonCount + 1
+                    PersonCountAccuracy.append(resultConficence)
+                    FPS.append(1.0/inference_time)
+
+
+                    currentTime = datetime.datetime.now()
+                    print("total seconds since last IoT hub message: " + str((currentTime - sentTime).total_seconds()))
+                    if (currentTime - sentTime).total_seconds() > 5:
+                        inference_result = {"personCount": PersonCount,
+                            "personCountAccuracy":(sum(PersonCountAccuracy) / len(PersonCountAccuracy)),
+                            "averageFPS":(sum(FPS) / len(FPS))
+                            }
+                        hub_manager.send_msg_to_cloud(json.dumps(inference_result))
+                        PersonCount = 0
+                        PersonCountAccuracy = []
+                        FPS = []
+                        sentTime = datetime.datetime.now()
                         
-                        labelX = int((x+x+w)/2)
-                        labelY = int((y+y+h)/2)
-                        addLabel = True
-                        labThreshold = 40
-                        for point in existingLabels[label[detectedClass]]:
-                            if labelX < point[0] + labThreshold and labelX > point[0] - labThreshold and \
-                                labelY < point[1] + labThreshold and labelY > point[1] - labThreshold:
-                                addLabel = False
-                        if addLabel:
-                            cv2.rectangle(frame, (int(x),int(y)),(int(x+w),int(y+h)),color,2)
-                            cv2.rectangle(frame, (int(x),int(y-13)),(int(x)+9*len(label[detectedClass]),int(y)),color,-1)
-                            cv2.putText(frame,label[detectedClass],(int(x)+2,int(y)-3),cv2.FONT_HERSHEY_COMPLEX,0.4,(255,255,255),1)
-                            existingLabels[label[detectedClass]].append((labelX,labelY))
-                        print('{} detected in frame {}'.format(label[detectedClass],i))
-                        resultConficence = np.around(confidence*100, decimals = 4)
-                        print('Result Conficence: ' + str(resultConficence))
-                        if label[detectedClass] == "bunny suit":
-                            bunnySuitCount = bunnySuitCount + 1
-                            bunnySuitCountAccuracy.append(resultConficence)
-                        elif label[detectedClass] == "glasses":
-                            glassesCount = glassesCount + 1
-                            glassesCountAccuracy.append(resultConficence)
-                        elif label[detectedClass] == "head":
-                            headCount = headCount + 1
-                            headCountAccuracy.append(resultConficence)
-
-                        currentTime = datetime.datetime.now()
-                        print("total seconds since message: " + str((currentTime - sentTime).total_seconds()))
-                        if (currentTime - sentTime).total_seconds() > 5:
-                            inference_result = {"bunnySuitCount": bunnySuitCount,
-                             "bunnySuitCountAccuracy":(sum(glassesCountAccuracy) / len(glassesCountAccuracy)),
-                             "glassesCount": glassesCount,
-                             "glassesCountAccuracy":(sum(glassesCountAccuracy) / len(glassesCountAccuracy)),
-                             "headCount": headCount,
-                             "headCountAccuracy":(sum(headCountAccuracy) / len(headCountAccuracy))
-                             }
-                            hub_manager.send_msg_to_cloud(json.dumps(inference_result))
-                            headCount = 0
-                            bunnySuitCount = 0
-                            glassesCount = 0
-                            headCountAccuracy = []
-                            bunnySuitCountAccuracy = []
-                            glassesCountAccuracy = []
-                            sentTime = datetime.datetime.now()
-
         #output_video.write(frame)
         cv2.putText(frame,'VPU',(10,20),cv2.FONT_HERSHEY_COMPLEX,0.5,(255,255,255),1)
         cv2.putText(frame,'FPS: {}'.format(1.0/inference_time),(10,40),cv2.FONT_HERSHEY_COMPLEX,0.5,(255,255,255),1)
         cv2.imshow('frame',frame)
+        # cv2.waitKey(0)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
         print('Processed Frame {}'.format(i))
@@ -172,7 +139,6 @@ def model_inferencing(hub_manager):
         print('Loop Time = {}'.format(l_end - l_start))
     #output_video.release()
     cv2.destroyAllWindows()
-
 
 
 # messageTimeout - the maximum time in milliseconds until a message times out.

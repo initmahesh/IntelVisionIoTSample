@@ -37,7 +37,7 @@
         },
         "modules": {
           "VisionSampleModule": {
-            "version": "1.0002",
+            "version": "1.003",
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
@@ -47,7 +47,7 @@
             }
           },
           "CentralAgent": {
-            "version": "1.0001",
+            "version": "1.001",
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",

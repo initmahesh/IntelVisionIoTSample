@@ -1,0 +1,91 @@
+{
+  "format": 1,
+  "restore": {
+    "c:\\Users\\v-dagrob\\Documents\\GitHub\\IntelVisionIoTSample\\IntelEdgeSolution\\IntelVision\\modules\\CentralAgent\\CentralAgent.csproj": {}
+  },
+  "projects": {
+    "c:\\Users\\v-dagrob\\Documents\\GitHub\\IntelVisionIoTSample\\IntelEdgeSolution\\IntelVision\\modules\\CentralAgent\\CentralAgent.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "c:\\Users\\v-dagrob\\Documents\\GitHub\\IntelVisionIoTSample\\IntelEdgeSolution\\IntelVision\\modules\\CentralAgent\\CentralAgent.csproj",
+        "projectName": "CentralAgent",
+        "projectPath": "c:\\Users\\v-dagrob\\Documents\\GitHub\\IntelVisionIoTSample\\IntelEdgeSolution\\IntelVision\\modules\\CentralAgent\\CentralAgent.csproj",
+        "packagesPath": "C:\\Users\\v-dagrob\\.nuget\\packages\\",
+        "outputPath": "c:\\Users\\v-dagrob\\Documents\\GitHub\\IntelVisionIoTSample\\IntelEdgeSolution\\IntelVision\\modules\\CentralAgent\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\v-dagrob\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp2.1"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp2.1": {
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "allWarningsAsErrors": true,
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp2.1": {
+          "dependencies": {
+            "Microsoft.Azure.Devices.Client": {
+              "target": "Package",
+              "version": "[1.29.0-preview-002, )"
+            },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[2.1.1, )"
+            },
+            "Microsoft.Extensions.Configuration.Abstractions": {
+              "target": "Package",
+              "version": "[2.1.1, )"
+            },
+            "Microsoft.Extensions.Configuration.Binder": {
+              "target": "Package",
+              "version": "[2.1.1, )"
+            },
+            "Microsoft.Extensions.Configuration.EnvironmentVariables": {
+              "target": "Package",
+              "version": "[2.1.1, )"
+            },
+            "Microsoft.Extensions.Configuration.FileExtensions": {
+              "target": "Package",
+              "version": "[2.1.1, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[2.0.0, )"
+            },
+            "Microsoft.NETCore.App": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.1.0, )",
+              "autoReferenced": true
+            },
+            "System.Runtime.Loader": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            }
+          },
+          "imports": [
+            "net461"
+          ],
+          "assetTargetFallback": true,
+          "warn": true
+        }
+      }
+    }
+  }
+}

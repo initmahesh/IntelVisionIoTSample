@@ -117,23 +117,15 @@ namespace CentralAgent
     {
 
 
-        [JsonProperty("headCount")]
-        public int headCount { get; set; }
+        [JsonProperty("personCount")]
+        public int personCount { get; set; }
 
-        [JsonProperty("headCountAccuracy")]
-        public float headCountAccuracy{ get; set; }
+        [JsonProperty("personCountAccuracy")]
+        public float personCountAccuracy{ get; set; }
 
-        [JsonProperty("bunnySuitCount")]
-        public int bunnySuitCount { get; set; }
+        [JsonProperty("averageFPS")]
+        public float averageFPS{ get; set; }
 
-        [JsonProperty("bunnySuitCountAccuracy")]
-        public float bunnySuitCountAccuracy{ get; set; }
-
-        [JsonProperty("glassesCount")]
-        public int glassesCount { get; set; }
-
-        [JsonProperty("glassesCountAccuracy")]
-        public float glassesCountAccuracy{ get; set; }
         
     }
 }
