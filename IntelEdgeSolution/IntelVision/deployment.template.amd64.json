@@ -13,7 +13,7 @@
               "registryName": {
                 "username": "$CONTAINER_REGISTRY_USERNAME_docker",
                 "password": "$CONTAINER_REGISTRY_PASSWORD_docker",
-                "address": "mycapreg.azurecr.io"
+                "address": "$CONTAINER_REGISTRY_ADDRESS_docker"
               }
             }
           }
@@ -68,21 +68,16 @@
                 "HostConfig": {
                   "Binds": [
                     "/tmp/.X11-unix:/tmp/.X11-unix",
-                    "/home/mahesh/my:/opt/data/",
                     "/dev:/dev"
                   ],
-                  "Devices": [
-                    {
-                      "PathOnHost": "/dev",
-                      "PathInContainer": "/dev",
-                      "CgroupPermissions": "rwm"
-                    }
-                  ],
+                  "NetworkMode": "host",
                   "IpcMode": "host",
                   "Privileged": true
                 },
-                "ProcessConfig": {
-                  "privileged": true
+                "NetworkingConfig": {
+                  "EndpointsConfig": {
+                    "host": {}
+                  }
                 },
                 "Env": [
                   "DISPLAY=:0"

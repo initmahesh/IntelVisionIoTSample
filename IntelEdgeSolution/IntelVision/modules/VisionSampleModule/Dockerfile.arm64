@@ -1,0 +1,23 @@
+FROM mcr.microsoft.com/azureml/onnxruntime:v0.5.0-tensorrt-l4t-r32.2
+
+WORKDIR /app
+
+RUN pip3 install --upgrade pip setuptools 
+
+COPY requirements_jetson.txt ./
+
+RUN apt-get update && \
+    apt-get install -y libssl-dev libffi-dev zip x11-apps lsb-core wget cpio sudo libpng-dev zlib1g-dev udev \
+    libnuma1 ocl-icd-libopencl1 clinfo libjpeg-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install -r requirements_jetson.txt
+
+ARG DEVICE
+
+RUN wget https://resourcesincode.blob.core.windows.net/intelvision/Tiny_YoloV2_Cleanroom.onnx
+
+COPY /resources/main.py .
+COPY /resources/manufacture1.mp4 .
+
+CMD [ "python3", "-u", "./main.py" ]

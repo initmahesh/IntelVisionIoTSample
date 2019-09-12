@@ -3,3 +3,4 @@ IntelEdgeSolution/IntelVision/config/deployment.amd64.json
 IntelEdgeSolution/human_detection_onnx/
 IntelEdgeSolution/IntelVision/modules/VisionSampleModule/resources/human_detector_onnx
 IntelEdgeSolution/IntelVision/config/DeploymentManifest_Cognition.json
+

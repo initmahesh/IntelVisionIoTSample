@@ -6,6 +6,7 @@ import random
 import time
 import sys
 import iothub_client
+import traceback
 # pylint: disable=E0611
 from iothub_client import IoTHubModuleClient, IoTHubClientError, IoTHubTransportProvider
 from iothub_client import IoTHubMessage, IoTHubMessageDispositionResult, IoTHubError
@@ -14,6 +15,9 @@ import onnxruntime as rt
 import cv2
 import json
 from PIL import Image,ImageDraw
+
+# these parameter need to move as properties
+delay_to_send_to_cloud = 3
 
 
 def sigmoid(x, derivative=False):
@@ -44,6 +48,8 @@ def model_inferencing(hub_manager):
 
     ret, frame = cap.read()
     i = 0
+    last_time = time.time()
+
     while cap.isOpened():
         l_start = time.time()
         _, _ = cap.read()
@@ -121,10 +127,10 @@ def model_inferencing(hub_manager):
                             existingLabels[label[detectedClass]].append((labelX,labelY))
                         print('{} detected in frame {}'.format(label[detectedClass],i))
                         inference_result = {"label":label[detectedClass],"confidence":confidence*100}
-                        hub_manager.send_msg_to_cloud(json.dumps(inference_result))
+                        last_time = hub_manager.send_msg_to_cloud(json.dumps(inference_result),last_time)
 
         #output_video.write(frame)
-        cv2.putText(frame,'VPU',(10,20),cv2.FONT_HERSHEY_COMPLEX,0.5,(255,255,255),1)
+        cv2.putText(frame,'ONNX Accelerated',(10,20),cv2.FONT_HERSHEY_COMPLEX,0.5,(255,255,255),1)
         cv2.putText(frame,'FPS: {}'.format(1.0/inference_time),(10,40),cv2.FONT_HERSHEY_COMPLEX,0.5,(255,255,255),1)
         cv2.imshow('frame',frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -149,8 +155,6 @@ SEND_CALLBACKS = 0
 
 # Choose HTTP, AMQP or MQTT as transport protocol.  Currently only MQTT is supported.
 PROTOCOL = IoTHubTransportProvider.MQTT
-
-
 
 
 # Callback received when the message that we're forwarding is processed.
@@ -202,19 +206,24 @@ class HubManager(object):
     def forward_event_to_output(self, outputQueueName, event, send_context):
         self.client.send_event_async(
             outputQueueName, event, send_confirmation_callback, send_context)
-    def send_msg_to_cloud(self, msg):
+    def send_msg_to_cloud(self, msg,last_sent_time=time.time()):
+        global delay_to_send_to_cloud
         try :
-            #logging.info("sending message...")
+            if(time.time() - last_sent_time <= delay_to_send_to_cloud):
+                return last_sent_time
             message=IoTHubMessage(msg)
             self.client.send_event_async(
                 "output1", 
                 message, 
                 send_confirmation_callback, 
                 0)
-            print("finished sending message...")
+            last_sent_time=time.time()
+            return last_sent_time
         except Exception :
             print ("Exception in SendMsgToCloud")
-            pass
+            traceback.print_exc()
+            last_sent_time=time.time()
+            return last_sent_time
 
 def main(protocol):
     try:
