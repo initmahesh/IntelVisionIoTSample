@@ -1,4 +1,4 @@
-###On host 
+## On host 
 
   please make sure you have VScode and can build and deploy python on Iot Edge devices as per instruction below
     https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-python-module
@@ -12,7 +12,7 @@
     Sign in to your Azure Container Registry by entering the following command in the Visual Studio Code integrated terminal (replace <REGISTRY_USER_NAME>, <REGISTRY_PASSWORD>, and <REGISTRY_NAME> to your container registry values set in the .env file).
     docker login -u <REGISTRY_USER_NAME> -p <REGISTRY_PASSWORD> <REGISTRY_NAME>.azurecr.io
 
-###On Edge Device :
+## On Edge Device :
 
   Please use this device as it comes with docker,Intel open Vino and IotEdge installed...
 
@@ -61,10 +61,10 @@ Optional for Intel if NCS@ does nto work from docker ::
     /opt/intel/computer_vision_sdk/install_dependencies/install_NCS_udev_rules.sh
 
 
-###How to build for different edge boards 
-####For Intel 
+### How to build for different edge boards 
+#### For Intel 
   - Rename deployment.template.amd64.json as deployment.template.json right click and build and deploy as learned with above python sample to deploy temperature sensor module 
-####For Jetson Nano 
+#### For Jetson Nano 
   - Rename deployment.template.arm64.json as deployment.template.json right click and build and deploy as learned with above python sample to deploy temperature sensor module 
 
 
