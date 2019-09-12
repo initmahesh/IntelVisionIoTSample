@@ -1,4 +1,4 @@
-On host 
+###On host 
 
   please make sure you have VScode and can build and deploy python on Iot Edge devices as per instruction below
     https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-python-module
@@ -12,14 +12,14 @@ On host
     Sign in to your Azure Container Registry by entering the following command in the Visual Studio Code integrated terminal (replace <REGISTRY_USER_NAME>, <REGISTRY_PASSWORD>, and <REGISTRY_NAME> to your container registry values set in the .env file).
     docker login -u <REGISTRY_USER_NAME> -p <REGISTRY_PASSWORD> <REGISTRY_NAME>.azurecr.io
 
-On Edge Device :
+###On Edge Device :
 
-  Please use this device as it comes with docker,Intel open Vinoand IotEdge installed...
+  Please use this device as it comes with docker,Intel open Vino and IotEdge installed...
 
   https://up-shop.org/home/285-up-squared-ai-vision-x-developer-kit.html#/116-up_squared_ai_vision_x_developer_kit-version_b_w_myriad_x
 
 
-  On device
+  ####On edge device
 
   1. “sudo gedit ~/.profile”  command to add “xhost +” command to “.profile” file, so now we don’t need to execute “xhost +” every time after restarting machine.This required to allow display to be used form docker .
 
@@ -28,7 +28,7 @@ On Edge Device :
       sudo nano /etc/iotedge/config.yaml
     This is the content of the config.yaml, replace the the <ADD..> with the connection string.
     
-   Also change the hostname to "up2" as below 
+   Also change the hostname to "<hostname>" as below 
    
     provisioning:
         source: "manual"
@@ -54,11 +54,17 @@ On Edge Device :
     ###############################################################################
 
     #hostname: "ivk-desktop"
-    hostname: "up2"
+    hostname: "<command:hostname output from device>"
+Optional for Intel if NCS@ does nto work from docker ::
 
   3.Set Usb rules by runing batch file at location 
     /opt/intel/computer_vision_sdk/install_dependencies/install_NCS_udev_rules.sh
 
 
+###How to build for different edge boards 
+####For Intel 
+  - Rename deployment.template.amd64.json as deployment.template.json right click and build and deploy as learned with above python sample to deploy temperature sensor module 
+####For Jetson Nano 
+  - Rename deployment.template.arm64.json as deployment.template.json right click and build and deploy as learned with above python sample to deploy temperature sensor module 
 
 
