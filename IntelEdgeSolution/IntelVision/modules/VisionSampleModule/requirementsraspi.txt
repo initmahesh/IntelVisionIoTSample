@@ -1,0 +1,5 @@
+azure-iothub-device-client
+setuptools 
+numpy 
+opencv-contrib-python
+pillow

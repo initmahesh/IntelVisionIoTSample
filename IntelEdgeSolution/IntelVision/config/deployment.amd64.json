@@ -42,10 +42,8 @@
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "mycapreg.azurecr.io/intelvisionsamplemodule:0.0.25-arm64",
-              "createOptions": "{\"HostConfig\":{\"Binds\":[\"/tmp/.X11-unix:/tmp/.X11-unix\",\"/usr/lib/aarch64-linux-gnu/:/usr/lib/aarch64-linux-gnu-override/\",\"/usr/lib/aarch64-linux-gnu/tegra:/usr/lib/aarch64-linux-gnu-override/tegra\",\"/usr/local/cuda:/usr/local/cuda\",\"/usr/local/cuda-10.0:/usr/local/cuda-10.0\",\"/dev:/dev\"],\"NetworkMode\":\"host\",\"Devices\":[{\"PathOnHost\":\"/dev/nvhost-ctrl\",\"PathInContainer\":\"/dev/nvhost-ctrl\",\"CgroupPermissions\":\"rwm\"},{\"PathOnHost\":\"/dev/nvhost-ctrl-gpu\",\"PathInContainer\":\"/dev/nvhost-ctrl-gpu\",\"CgroupPermiss",
-              "createOptions01": "ions\":\"rwm\"},{\"PathOnHost\":\"/dev/nvhost-vic\",\"PathInContainer\":\"/dev/nvhost-vic\",\"CgroupPermissions\":\"rwm\"},{\"PathOnHost\":\"/dev/nvhost-prof-gpu\",\"PathInContainer\":\"/dev/nvhost-prof-gpu\",\"CgroupPermissions\":\"rwm\"},{\"PathOnHost\":\"/dev/nvmap\",\"PathnContainer\":\"/dev/nvmap\",\"CgroupPermissions\":\"rwm\"},{\"PathOnHost\":\"/dev/nvhost-gpu\",\"PathInContainer\":\"/dev/nvhost-gpu\",\"CgroupPermissions\":\"rwm\"},{\"PathOnHost\":\"/dev/nvhost-as-gpu\",\"PathInContainer\":\"/dev/nvhost-as-gpu\",\"CgroupPermissions\":\"rwm\"}],\"IpcMode\":\"host\",\"",
-              "createOptions02": "Privileged\":true},\"NetworkingConfig\":{\"EndpointsConfig\":{\"host\":{}}},\"Env\":[\"DISPLAY=:0\"]}"
+              "image": "mycapreg.azurecr.io/intelvisionsamplemodule:0.0.40-arm32v7",
+              "createOptions": "{\"HostConfig\":{\"Binds\":[\"/tmp/.X11-unix:/tmp/.X11-unix\",\"/dev:/dev\"],\"NetworkMode\":\"host\",\"IpcMode\":\"host\",\"Privileged\":true},\"NetworkingConfig\":{\"EndpointsConfig\":{\"host\":{}}},\"Env\":[\"DISPLAY=:0\"]}"
             }
           }
         }

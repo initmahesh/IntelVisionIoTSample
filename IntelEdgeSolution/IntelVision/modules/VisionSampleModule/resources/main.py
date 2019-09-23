@@ -32,10 +32,10 @@ def model_inferencing(hub_manager):
     clut = [(0,0,0),(255,0,0),(255,0,255),(0,0,255),(0,200,0)]
     label = ["unprotected","bunny suit","glasses","head","robot"]
 
-    sess = rt.InferenceSession("Tiny_YoloV2_Cleanroom.onnx")
+    sess = rt.InferenceSession("model.onnx")
     input_name = sess.get_inputs()[0].name
 
-    cap = cv2.VideoCapture('manufacture1.mp4')
+    cap = cv2.VideoCapture('video.mp4')
     #cap = cv2.VideoCapture(0)
     fps = cap.get(cv2.CAP_PROP_FPS)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
