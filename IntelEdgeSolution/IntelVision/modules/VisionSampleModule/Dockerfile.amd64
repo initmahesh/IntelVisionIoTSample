@@ -1,8 +1,6 @@
 FROM ortopenvino.azurecr.io/onnxruntime-openvino-myriad:latest
 
-RUN echo "BUILD MODULE: Inference Module for amd64"
-
-#ENV DEBIAN_FRONTEND=noninteractive
+RUN echo "BUILD MODULE: Inference Module for arm32v7"
 
 WORKDIR /app
 
@@ -24,9 +22,8 @@ ENV PATH=/usr/bin/:/bin/
 
 ARG DEVICE
 
-RUN wget https://resourcesincode.blob.core.windows.net/intelvision/Tiny_YoloV2_Cleanroom.onnx
+RUN wget https://resourcesincode.blob.core.windows.net/intelvision/model.onnx
 
 COPY /resources/main.py .
-COPY /resources/manufacture1.mp4 .
-
+COPY /resources/manufacture1.mp4 ./video.mp4
 CMD [ "python3", "-u", "./main.py" ]
