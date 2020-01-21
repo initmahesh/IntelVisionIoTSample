@@ -4,7 +4,7 @@
     https://docs.microsoft.com/en-us/azure/iot-edge/tutorial-python-module
   Please change env file to your contianer registry credentials build and deploy ...
   
-  Update the .env file with the values for your container registry. Refer to Create a container registry for more detail about ACR  settings.
+  Update/Create .env file at the same location where you have deolyment.template.json with the values for your container registry. Refer to Create a container registry for more detail about ACR  settings.
   
         REGISTRY_NAME=<YourAcrUri>
         REGISTRY_USER_NAME=<YourAcrUserName>
